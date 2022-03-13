@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="system.png" type="image/x-icon">
+    <link rel="stylesheet" href="styles.css">
+    <title>SO Operations</title>
+</head>
+<body id="body">
+    <h1> Programando un proceso y la memoria</h1>
+    <div class="form_container">
+        <div class="form">
+            <input type="number" name="process_quantity_value" id="process_quantity" autocomplete="off" required/>
+            <label for="process_quantity_value" class="label_input">
+                <span class="content_input"><b>Cantidad de procesos</b></span>
+            </label>
+        </div>
+        <button id="exec_button" class="exec_button"><b>Ejecutar</b></button>
+    </div>
+
+    <div class="info">
+        <p>Quantum: 3 seg</p>
+        <p>Tamaño de marco: 16 MB</p>
+    </div>
+
+    <div class="tables">
+        <!-- Tabla de procesos -->
+        <div class="table_container">
+            <p>Cola de procesos</p>
+            <div class="scroll_table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Proceso</th>
+                            <th>Tamaño (MB)</th>
+                            <th>Tiempo de procesamiento (s)</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="process_list">
+                        <tr>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    
+        <!-- Tabla de memoria principal-->
+        <div class="table_container">
+            <p>Memoria principal (256 MB)</p>
+            <div class="scroll_table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Marco</th>
+                            <th>Proceso</th>
+                            <th>Tamaño ocupado (MB)</th>
+                            <th>Tamaño libre (MB)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="principal_memory">
+                        <tr>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    
+        <!-- Tabla de memoria virtual -->
+        <div class="table_container">
+            <p>Memoria virtual (512 MB)</p>
+            <div class="scroll_table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Marco</th>
+                            <th>Proceso</th>
+                            <th>Tamaño ocupado (MB)</th>
+                            <th>Tamaño libre (MB)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="virtual_memory">
+                        <tr>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="Process.js"></script>
+    <script src="Frame.js"></script>
+    <script src="Process_And_Memory.js"></script>
+</body>
+</html>
