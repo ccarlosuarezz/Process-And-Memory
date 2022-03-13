@@ -9,8 +9,8 @@ const execButton = document.getElementById('exec_button');
 const COLOR_CREATED = '#5ACDFE';
 const COLOR_READY = '#FFFA4D';
 const COLOR_EXECUTING = '#00D455';
-const COLOR_WAITING_CPU = '#FF2626';
-const COLOR_WAITING_IO = '#F76E11';
+const COLOR_WAITING_CPU = '#F76E11';
+const COLOR_WAITING_IO = '#FF2626';
 const COLOR_RECEIVING_IO = '#00EAD3';
 const COLOR_TERMINATED = '#D1D1D1';
 
@@ -198,13 +198,11 @@ function runProcesses() {
         fillProcessesTable();
         if (!checkIfTheProcessesFinished()) {
 
-            const validateIfProcessTerminated = () => {
-                if (queueReadyProcessList[0].time == 0) {
-                    queueReadyProcessList[0].state = stateList[6];
-                    queueReadyProcessList.shift();
-                    countTimeInCPUActualProcess = 1;
-                    //liberar memoria
-                }
+            const ifProcessTerminated = (process) => {
+                process.state = stateList[6];
+                queueReadyProcessList.shift();
+                countTimeInCPUActualProcess = 1;
+                //liberar memoria
             }
             
             if (queueReadyProcessList[0].time != 0) {
@@ -212,17 +210,19 @@ function runProcesses() {
                     queueReadyProcessList[0].state = stateList[2]; //Executing
                     queueReadyProcessList[0].time--;
                     countTimeInCPUActualProcess++;
-                    validateIfProcessTerminated();
+                    if (queueReadyProcessList[0].time == 0) {
+                        ifProcessTerminated(queueReadyProcessList[0]);
+                    }
                 } else {
                     queueReadyProcessList[0].time--;
-                    validateIfProcessTerminated();
-                    if (queueReadyProcessList.length > 0) {
-                        if (queueReadyProcessList[0].time != 0) {
-                            queueReadyProcessList[0].state = stateList[3]; //Waiting CPU
-                            countTimeInCPUActualProcess = 1;
-                            queueReadyProcessList.push(queueReadyProcessList.shift());
-                            queueReadyProcessList[0].state = stateList[2];
-                        }
+                    if (queueReadyProcessList[0].time == 0) {
+                        ifProcessTerminated(queueReadyProcessList[0]);
+                    } else {
+                        queueReadyProcessList[0].state = stateList[3]; //Waiting CPU
+                        countTimeInCPUActualProcess = 1;
+                        queueReadyProcessList.push(queueReadyProcessList.shift());
+                        queueReadyProcessList[0].state = stateList[2];
+
                     }
                 }
             }
