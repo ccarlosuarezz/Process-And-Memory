@@ -17,6 +17,7 @@ const COLOR_TERMINATED = '#D1D1D1';
 const PRINCIPAL_MEMORY_SIZE = 256;//MB
 const VIRTUAL_MEMORY_SIZE = 512;//MB
 const FRAME_SIZE = 16;//MB
+const QUANTUM = 3;//Segundos
 
 let stateList = [
     {id: 1, name: 'Created', color: COLOR_CREATED},
@@ -30,6 +31,9 @@ let stateList = [
 let processList = [];
 let frameListPrincipalMemory = [];
 let frameListVirtualMemory = [];
+let queueReadyProcessList = [];
+
+let timeInterval;
 
 execButton.addEventListener('click', simulate);
 
@@ -103,6 +107,7 @@ function generatePseudoRandom(minSec, maxSec) {
 }
 
 function fillProcessesTable() {
+    processTable.innerHTML = '';
     for (let i = 0; i < processList.length; i++) {
         let actualProces = processList[i];
         showNewProcess(actualProces.id, actualProces.size, actualProces.time, actualProces.state);
@@ -185,5 +190,78 @@ function allocateProcessesInMemory() {
 }
 
 function runProcesses() {
+    let countTimeInCPUActualProcess = 1;
 
+    checkReadyProcess();
+
+    timeInterval = setInterval(() => {
+        fillProcessesTable();
+        if (!checkIfTheProcessesFinished()) {
+
+            const validateIfProcessTerminated = () => {
+                if (queueReadyProcessList[0].time == 0) {
+                    queueReadyProcessList[0].state = stateList[6];
+                    queueReadyProcessList.shift();
+                    countTimeInCPUActualProcess = 1;
+                    //liberar memoria
+                }
+            }
+            
+            console.log(countTimeInCPUActualProcess);
+            if (queueReadyProcessList[0].time != 0) {
+                if (countTimeInCPUActualProcess < QUANTUM) {
+                    queueReadyProcessList[0].state = stateList[2]; //Executing
+                    queueReadyProcessList[0].time--;
+                    countTimeInCPUActualProcess++;
+                    validateIfProcessTerminated();
+                } else {
+                    queueReadyProcessList[0].time--;
+                    validateIfProcessTerminated();
+                    if (queueReadyProcessList.length > 0) {
+                        if (queueReadyProcessList[0].time != 0) {
+                            queueReadyProcessList[0].state = stateList[3]; //Waiting CPU
+                            countTimeInCPUActualProcess = 1;
+                            queueReadyProcessList.push(queueReadyProcessList.shift());
+                            queueReadyProcessList[0].state = stateList[2];
+                        }
+                    }
+                }
+            }
+
+        } else {
+            clearInterval(timeInterval);
+        }
+    }, 1000);
+}
+
+function checkIfTheProcessesFinished() {
+    let allProcessTerminated = false;
+    let countProcessesTerminated = 0;
+    for (let i = 0; i < processList.length; i++) {
+        if (processList[i].state.id == 7) {
+            countProcessesTerminated++;
+        }
+    }
+    if (countProcessesTerminated == processList.length) {
+        allProcessTerminated = true;
+    }
+    return allProcessTerminated;
+}
+
+function checkReadyProcess() {
+    for (let i = 0; i < processList.length; i++) {
+        let actualProcess = processList[i];
+        let countOfPagesInPrincipalMemory = 0;
+        for (let j = 0; j < actualProcess.pages.length; j++) {
+            if (actualProcess.pages[j].isInPrincipalMemory) {
+                countOfPagesInPrincipalMemory++;
+            }
+        }
+        if (countOfPagesInPrincipalMemory == actualProcess.pages.length) {
+            actualProcess.state = stateList[1]; //Ready
+            queueReadyProcessList.push(actualProcess);
+        } else {
+            actualProcess.state = stateList[4]; //Waiting I/O
+        }
+    }
 }
