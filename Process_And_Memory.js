@@ -207,7 +207,6 @@ function runProcesses() {
                 }
             }
             
-            console.log(countTimeInCPUActualProcess);
             if (queueReadyProcessList[0].time != 0) {
                 if (countTimeInCPUActualProcess < QUANTUM) {
                     queueReadyProcessList[0].state = stateList[2]; //Executing
